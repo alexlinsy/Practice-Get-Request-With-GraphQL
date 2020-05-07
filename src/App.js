@@ -14,6 +14,10 @@ function PokemonInfo({ pokemonName }) {
     });
   }, [pokemonName]);
 
+  if (!pokemonName) {
+    return "Submit a Pokemon";
+  }
+
   if (!pokemon) {
     return "...";
   }
