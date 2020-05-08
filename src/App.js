@@ -3,26 +3,42 @@ import "./styles.css";
 
 function PokemonInfo({ pokemonName }) {
   const [pokemon, setPokemon] = useState(null);
+  const [error, setError] = useState(null);
+  const [status, setStatus] = useState("idle");
   // Fetch request is a asynchronous function,
   // should be written in useEffect for handling side effects.
   useEffect(() => {
     if (!pokemonName) {
       return;
     }
-    fetchPokemon(pokemonName).then(pokemonData => {
-      setPokemon(pokemonData);
-    });
+    setStatus("Pending");
+    fetchPokemon(pokemonName).then(
+      pokemonData => {
+        setStatus("Resolved");
+        setPokemon(pokemonData);
+      },
+      errorData => {
+        setStatus("Rejected");
+        setError(errorData);
+      }
+    );
   }, [pokemonName]);
 
-  if (!pokemonName) {
+  if (status === "idle") {
     return "Submit a Pokemon";
   }
 
-  if (!pokemon) {
+  if (error && status === "Rejected") {
+    return "Oh no...";
+  }
+
+  if (status === "Pending") {
     return "...";
   }
 
-  return <pre>{JSON.stringify(pokemon, null, 2)}</pre>;
+  if (status === "Resolved") {
+    return <pre>{JSON.stringify(pokemon, null, 2)}</pre>;
+  }
 }
 
 export default function App() {
